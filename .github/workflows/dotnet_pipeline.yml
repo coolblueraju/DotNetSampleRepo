@@ -39,10 +39,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Setup CodeQL
-      uses: github/codeql-action/setup@latest
+      uses: github/codeql-action/setup@v3
 
     - name: Run CodeQL Analysis
-      uses: github/codeql-action/analyze@latest
+      uses: github/codeql-action/analyze@v3
 
   deploy:
     runs-on: ubuntu-latest
