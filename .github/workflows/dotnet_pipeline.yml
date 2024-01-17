@@ -33,10 +33,22 @@ jobs:
 
   codeql-analysis:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp' ]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
 
     #- name: Setup CodeQL
     #  uses: github/codeql-action/setup@v3
