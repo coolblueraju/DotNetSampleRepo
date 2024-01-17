@@ -69,15 +69,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Setup SonarCloud
-      uses: sonarsource/sonarcloud-github-action@v1
+    - uses: actions/checkout@v3
       with:
-        organization: coolblueraju
-        token: 266b076518359cd0f49dec9b3e52c68765f76f8
-        projectKey: DotNetSampleRepo
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: 266b076518359cd0f49dec9b3e52c68765f76f8
+
+    - name: Analyze with SonarCloud
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.organization=coolblueraju
+          -Dsonar.projectKey=DotNetSampleRepo
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+
+    #- name: Setup SonarCloud
+    #  uses: sonarsource/sonarcloud-github-action@v1
+    #  with:
+    #    organization: coolblueraju
+    #    token: 266b076518359cd0f49dec9b3e52c68765f76f8
+    #    projectKey: DotNetSampleRepo
 
     #- name: Setup SonarQube
     #  uses: sonarsource/setup-sonarqube@v1
