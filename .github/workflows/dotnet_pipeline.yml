@@ -62,8 +62,29 @@ jobs:
     #- name: Setup CodeQL
     #  uses: github/codeql-action/setup@v3
 
+    #- name: Run CodeQL Analysis
+    #  uses: github/codeql-action/analyze@v3
+
     - name: Run CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@latest
+
+  sonarqube-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup SonarQube
+      uses: sonarsource/setup-sonarqube@v1
+      with:
+        token: 4266b076518359cd0f49dec9b3e52c68765f76f8
+        projectKey: DotNetSampleRepo
+        organization: coolblueraju
+        scannerVersion: '4.6.2.2472'
+
+    - name: Run SonarQube Analysis
+      run: sonar-scanner
 
   deploy:
     runs-on: ubuntu-latest
