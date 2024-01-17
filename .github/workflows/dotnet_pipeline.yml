@@ -66,29 +66,76 @@ jobs:
       uses: github/codeql-action/analyze@v3
 
   sonarqube-analysis:
-    runs-on: ubuntu-latest
-
+    name: SonarCloud
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
+      - uses: actions/checkout@v2
+        with:
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+
+      # Speed-up analysis by caching the scanner workspace
+      - name: Cache SonarCloud workspace
+        uses: actions/cache@v1
+        with:
+          path: ~\.sonar\cache
+          key: ${{ runner.os }}-sonar-cache
+          restore-keys: ${{ runner.os }}-sonar-cache
+
+      # Speed-up analysis by caching the scanner installation
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        # The --version argument is optional. If it is omitted the latest version will be installed.
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 4.8.0
+
+      - name: Build
+        shell: powershell
+        env:
+          # Needed to get some information about the pull request, if any
+          GITHUB_TOKEN: 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 #${{ secrets.GITHUB_TOKEN }}
+          # The secret referenced in the command-line by SONAR_TOKEN should be generated
+          # from https://sonarcloud.io/account/security/
+          # The organization and project arguments (see /o and /k) are displayed
+          # on the project dashboard in SonarCloud.
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"SonarSource_sonarcloud-github-action-samples" /o:"sonarsource" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build SomeConsoleApplication.sln
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="266b076518359cd0f49dec9b3e52c68765f76f8"
+    #runs-on: ubuntu-latest
+
+    #steps:
+    #- uses: actions/checkout@v3
+    #  with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
-        fetch-depth: 0
+    #    fetch-depth: 0
     #- name: SonarCloud Scan
     #  uses: sonarsource/sonarcloud-github-action@master
     #  env:
     #    GITHUB_TOKEN: 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
     #    SONAR_TOKEN: 266b076518359cd0f49dec9b3e52c68765f76f8
 
-    - name: Scan with SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: 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
-        SONAR_TOKEN: 266b076518359cd0f49dec9b3e52c68765f76f8
-      with:
-        args: >
-          -Dsonar.organization=coolblueraju
-          -Dsonar.projectKey=DotNetSampleRepo
-          -Dsonar.python.coverage.reportPaths=coverage.xml
+    #- name: Scan with SonarCloud
+    #  uses: sonarsource/sonarcloud-github-action@master
+    #  env:
+    #    GITHUB_TOKEN: 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
+    #    SONAR_TOKEN: 266b076518359cd0f49dec9b3e52c68765f76f8
+    #  with:
+    #    projectBaseDir: .
+    #    args: >
+    #      -Dsonar.organization=coolblueraju
+    #      -Dsonar.projectKey=DotNetSampleRepo
+    #      -Dsonar.python.coverage.reportPaths=coverage.xml
 
     #- name: Setup SonarCloud
     #  uses: sonarsource/sonarcloud-github-action@v1
@@ -105,8 +152,8 @@ jobs:
     #    organization: coolblueraju
     #    scannerVersion: '4.6.2.2472'
 
-    - name: Run SonarQube Analysis
-      run: sonar-scanner
+    #- name: Run SonarQube Analysis
+    #  run: sonar-scanner
 
   deploy:
     runs-on: ubuntu-latest
