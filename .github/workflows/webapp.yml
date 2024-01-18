@@ -14,34 +14,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
-          include-prerelease: true
-        
-      - name: Restore dependencies
-        run: dotnet restore
-      
-      - name: Build
-        run: dotnet build --no-restore
-      
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-
-      #- name: Build with dotnet
-      #  run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish DotNet6WithGithubActions/DotNet6WithGithubActions.csproj -c Release -o release --nologo
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: .net-app
-          path: /home/runner/work/DotNetSampleRepo/DotNet6WithGithubActions/release
+        - uses: actions/checkout@v2
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: 6.0.x
+        - name: Restore dependencies
+          run: dotnet restore
+        - name: Build
+          run: dotnet build --no-restore
+        - name: Test
+          run: dotnet test --no-build --verbosity normal
+        - name: Publish
+          run: dotnet publish DotNet6WithGithubActions/DotNet6WithGithubActions.csproj -c Release -o release --nologo
+        - name: Upload Build Artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: Application_Artifact
+            path: /home/runner/work/DotNetSampleRepo/DotNet6WithGithubActions/release/
 
   deploy:
     runs-on: windows-latest
@@ -54,7 +44,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
+          name: Application_Artifact
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
