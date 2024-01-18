@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
@@ -38,7 +38,7 @@ jobs:
         run: dotnet publish DotNet6WithGithubActions/DotNet6WithGithubActions.csproj -c Release -o release --nologo
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: .net-app
           path: /home/runner/work/DotNetSampleRepo/DotNet6WithGithubActions/release
