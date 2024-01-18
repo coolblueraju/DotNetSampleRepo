@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: /home/runner/work/DotNet6WithGithubActions/DotNet6WithGithubActions/release/
+          path: /home/runner/work/DotNet6WithGithubActions/DotNet6WithGithubActions/bin/Release
 
   deploy:
     runs-on: windows-latest
