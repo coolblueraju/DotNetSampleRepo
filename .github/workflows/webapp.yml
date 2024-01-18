@@ -26,12 +26,12 @@ jobs:
         - name: Test
           run: dotnet test --no-build --verbosity normal
         - name: Publish
-          run: dotnet publish DotNet6WithGithubActions/DotNet6WithGithubActions.csproj -c Release -o release --nologo
+          run: dotnet publish DotNetSampleRepo/DotNet6WithGithubActions.csproj -c Release -o release --nologo
         - name: Upload Build Artifact
           uses: actions/upload-artifact@v2
           with:
             name: Application_Artifact
-            path: /home/runner/work/DotNetSampleRepo/DotNet6WithGithubActions/release/
+            path: /home/runner/work/DotNetSampleRepo/DotNetSampleRepo/release/
 
   deploy:
     runs-on: windows-latest
