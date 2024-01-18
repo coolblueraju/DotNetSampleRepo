@@ -31,7 +31,7 @@ jobs:
           uses: actions/upload-artifact@v2
           with:
             name: Application_Artifact
-            path: /home/runner/work/DotNetSampleRepo/DotNetSampleRepo/DotNet6WithGithubActions/release/
+            path: /home/runner/work/DotNetSampleRepo/DotNetSampleRepo/release/
 
   deploy:
     runs-on: windows-latest
